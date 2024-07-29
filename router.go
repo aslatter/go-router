@@ -15,10 +15,14 @@ import (
 // Handler-patterns support the same features and syntax as
 // [http.ServeMux].
 type Router struct {
-	prefix     string
-	subRouters []*Router
 	routes     []route
 	middleware []func(http.Handler) http.Handler
+	subRouters []subRouter
+}
+
+type subRouter struct {
+	prefix    string
+	subrouter *Router
 }
 
 type route struct {
@@ -38,10 +42,11 @@ func New() *Router {
 //
 // All parent-middleware will be applied before all sub-router middleware.
 func (r *Router) New(prefix string) *Router {
-	s := &Router{
-		prefix: prefix,
-	}
-	r.subRouters = append(r.subRouters, s)
+	s := &Router{}
+	r.subRouters = append(r.subRouters, subRouter{
+		prefix:    prefix,
+		subrouter: s,
+	})
 	return s
 }
 
@@ -75,8 +80,7 @@ func (r *Router) register(m *http.ServeMux) {
 	r.registerChildRouter(m, "", [](func(http.Handler) http.Handler){})
 }
 
-func (r *Router) registerChildRouter(m *http.ServeMux, parentPrefix string, parentMiddleware []func(http.Handler) http.Handler) {
-	prefix := path.Join(parentPrefix, r.prefix)
+func (r *Router) registerChildRouter(m *http.ServeMux, prefix string, parentMiddleware []func(http.Handler) http.Handler) {
 	middleware := slices.Concat(parentMiddleware, r.middleware)
 
 	for _, route := range r.routes {
@@ -86,7 +90,8 @@ func (r *Router) registerChildRouter(m *http.ServeMux, parentPrefix string, pare
 	}
 
 	for _, s := range r.subRouters {
-		s.registerChildRouter(m, prefix, middleware)
+		subPrefix := path.Join(prefix, s.prefix)
+		s.subrouter.registerChildRouter(m, subPrefix, middleware)
 	}
 }
 
