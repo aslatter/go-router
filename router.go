@@ -63,9 +63,9 @@ func (r *Router) Use(middelware func(http.Handler) http.Handler) {
 	r.middleware = append(r.middleware, middelware)
 }
 
-// Build produces an [http.Handler] to server requests using the handlers
+// Handler produces an [http.Handler] to server requests using the handlers
 // and middleware registered to the router.
-func (r *Router) Build() http.Handler {
+func (r *Router) Handler() http.Handler {
 	m := http.NewServeMux()
 	r.register(m)
 	return m
