@@ -15,7 +15,7 @@ func Test_applyPrefixToPattern(t *testing.T) {
 		{
 			name: "nil",
 			args: args{},
-			want: "/",
+			want: "",
 		},
 		{
 			name: "nil prefix",
@@ -34,7 +34,7 @@ func Test_applyPrefixToPattern(t *testing.T) {
 		{
 			name: "basic prefix",
 			args: args{
-				prefix:  "pre",
+				prefix:  "/pre",
 				pattern: "/some/path",
 			},
 			want: "/pre/some/path",
@@ -42,7 +42,7 @@ func Test_applyPrefixToPattern(t *testing.T) {
 		{
 			name: "compound prefix",
 			args: args{
-				prefix:  "pre/fix",
+				prefix:  "/pre/fix",
 				pattern: "/some/path",
 			},
 			want: "/pre/fix/some/path",
@@ -74,7 +74,7 @@ func Test_applyPrefixToPattern(t *testing.T) {
 		{
 			name: "basic prefix with method",
 			args: args{
-				prefix:  "pre",
+				prefix:  "/pre",
 				pattern: "POST /some/path",
 			},
 			want: "POST /pre/some/path",
@@ -82,10 +82,18 @@ func Test_applyPrefixToPattern(t *testing.T) {
 		{
 			name: "compound prefix with method",
 			args: args{
-				prefix:  "pre/fix",
+				prefix:  "/pre/fix",
 				pattern: "PUT /some/path",
 			},
 			want: "PUT /pre/fix/some/path",
+		},
+		{
+			name: "trailing slash compound prefix with method",
+			args: args{
+				prefix:  "/pre/fix/",
+				pattern: "DELETE /some/path",
+			},
+			want: "DELETE /pre/fix/some/path",
 		},
 	}
 	for _, tt := range tests {

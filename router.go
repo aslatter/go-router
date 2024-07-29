@@ -100,15 +100,7 @@ func applyMiddleware(m []func(http.Handler) http.Handler, h http.Handler) http.H
 func applyPrefixToPattern(prefix string, pattern string) string {
 	before, after, found := strings.Cut(pattern, " ")
 	if !found {
-		return combinePaths(prefix, pattern)
+		return path.Join(prefix, pattern)
 	}
-	return before + " " + combinePaths(prefix, after)
-}
-
-func combinePaths(prefix string, pattern string) string {
-	ret := path.Join(prefix, pattern)
-	if strings.HasPrefix(ret, "/") {
-		return ret
-	}
-	return "/" + ret
+	return before + " " + path.Join(prefix, after)
 }
