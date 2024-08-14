@@ -95,6 +95,30 @@ func Test_applyPrefixToPattern(t *testing.T) {
 			},
 			want: "DELETE /pre/fix/some/path",
 		},
+		{
+			name: "tab separated method",
+			args: args{
+				prefix:  "/pre/fix/",
+				pattern: "DELETE\t/some/path",
+			},
+			want: "DELETE /pre/fix/some/path",
+		},
+		{
+			name: "tab and space separated method",
+			args: args{
+				prefix:  "/pre/fix/",
+				pattern: "DELETE\t /some/path",
+			},
+			want: "DELETE /pre/fix/some/path",
+		},
+		{
+			name: "multiple space separated method",
+			args: args{
+				prefix:  "/pre/fix/",
+				pattern: "DELETE  /some/path",
+			},
+			want: "DELETE /pre/fix/some/path",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
