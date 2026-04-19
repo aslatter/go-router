@@ -96,6 +96,22 @@ func Test_applyPrefixToPattern(t *testing.T) {
 			want: "DELETE /pre/fix/some/path",
 		},
 		{
+			name: "trailing slash suffix",
+			args: args{
+				prefix:  "",
+				pattern: "POST /foo/bar/",
+			},
+			want: "POST /foo/bar/",
+		},
+		{
+			name: "trailing slash prefix, no suffix",
+			args: args{
+				prefix:  "/foo/bar/",
+				pattern: "",
+			},
+			want: "/foo/bar/",
+		},
+		{
 			name: "tab separated method",
 			args: args{
 				prefix:  "/pre/fix/",

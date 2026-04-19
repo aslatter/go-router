@@ -105,9 +105,9 @@ func applyMiddleware(m []func(http.Handler) http.Handler, h http.Handler) http.H
 func applyPrefixToPattern(prefix string, pattern string) string {
 	before, after, found := splitPattern(pattern)
 	if !found {
-		return path.Join(prefix, pattern)
+		return join(prefix, pattern)
 	}
-	return before + " " + path.Join(prefix, after)
+	return before + " " + join(prefix, after)
 }
 
 func splitPattern(pattern string) (method string, remainder string, found bool) {
@@ -117,4 +117,16 @@ func splitPattern(pattern string) (method string, remainder string, found bool) 
 		return method, strings.TrimLeft(remainder, " \t"), true
 	}
 	return "", pattern, false
+}
+
+func join(p1 string, p2 string) string {
+	needsTrailingSlash := strings.HasSuffix(p2, "/")
+	if p2 == "" {
+		needsTrailingSlash = strings.HasSuffix(p1, "/")
+	}
+	p := path.Join(p1, p2)
+	if needsTrailingSlash && !strings.HasSuffix(p, "/") {
+		p = p + "/"
+	}
+	return p
 }
